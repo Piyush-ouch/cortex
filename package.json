@@ -1,0 +1,29 @@
+{
+  "name": "cortex-ai-workspace",
+  "version": "1.0.0",
+  "description": "Cortex AI - AI Agent Orchestration and Chat Platform Root Workspace",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend/gateway",
+    "backend/services/agent",
+    "backend/services/auth",
+    "backend/services/billing",
+    "backend/services/chat"
+  ],
+  "scripts": {
+    "install:all": "npm install && npm install --prefix frontend && npm install --prefix backend/gateway && npm install --prefix backend/services/agent && npm install --prefix backend/services/auth && npm install --prefix backend/services/billing && npm install --prefix backend/services/chat",
+    "redis:up": "docker compose -f backend/docker-compose.yml up -d",
+    "redis:down": "docker compose -f backend/docker-compose.yml down",
+    "dev:gateway": "npm run dev --prefix backend/gateway",
+    "dev:auth": "npm run dev --prefix backend/services/auth",
+    "dev:chat": "npm run dev --prefix backend/services/chat",
+    "dev:agent": "npm run dev --prefix backend/services/agent",
+    "dev:billing": "npm run dev --prefix backend/services/billing",
+    "dev:frontend": "npm run dev --prefix frontend",
+    "dev:all": "concurrently \"npm run dev:gateway\" \"npm run dev:auth\" \"npm run dev:chat\" \"npm run dev:agent\" \"npm run dev:billing\" \"npm run dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
