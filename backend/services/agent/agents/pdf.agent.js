@@ -141,8 +141,6 @@ Rules:
         }
       );
 
-    doc.end();
-
     await new Promise(
       (resolve, reject) => {
 
@@ -156,6 +154,7 @@ Rules:
           reject
         );
 
+        doc.end();
       }
     );
 
