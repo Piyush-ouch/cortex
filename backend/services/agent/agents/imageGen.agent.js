@@ -95,6 +95,7 @@ ${state.prompt}
     return {
 
       ...state,
+      images: [downloadUrl],
 
      response: `
 # 🖼️ Image Generated Successfully
