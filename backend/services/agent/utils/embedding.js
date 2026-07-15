@@ -8,6 +8,6 @@ new GoogleGenerativeAIEmbeddings({
     process.env.GOOGLE_API_KEY,
 
     model:
-    "gemini-embedding-001"
+    "text-embedding-004"
 
 });
