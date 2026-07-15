@@ -265,43 +265,29 @@ console.log(content)
 
     });
 
-  }else{
-
-    let fileName = "main.js";
-
-    const prompt =
-      state.prompt.toLowerCase();
-
-    if(prompt.includes("html")){
-      fileName = "index.html";
+  } else {
+    // Fallback: Parse markdown code blocks if custom FILE headers are not used
+    const codeBlockRegex = /```(\w*)\n([\s\S]*?)```/g;
+    let match;
+    while ((match = codeBlockRegex.exec(content)) !== null) {
+      let ext = match[1] || "js";
+      let name = `main.${ext}`;
+      if (ext === "html") name = "index.html";
+      if (ext === "css") name = "style.css";
+      files.push({
+        name,
+        content: match[2].trim()
+      });
     }
-    else if(prompt.includes("css")){
-      fileName = "style.css";
-    }
-    else if(prompt.includes("python")){
-      fileName = "main.py";
-    }
-    else if(prompt.includes("java")){
-      fileName = "Main.java";
-    }
-    else if(prompt.includes("c++")){
-      fileName = "main.cpp";
-    }
-
-   
-
- 
-
   }
 
-
-  if (!content.includes("FILE:")) {
-  return {
-    ...state,
-    response: content,
-    artifacts: []
-  };
-}
+  if (files.length === 0) {
+    return {
+      ...state,
+      response: content,
+      artifacts: []
+    };
+  }
 
   return {
 
