@@ -46,12 +46,9 @@ const [showBilling, setShowBilling] =useState(false);
     setMobileOpen(false);
   };
 
-  const handleSelectConversation = async (conversation) => {
+  const handleSelectConversation = (conversation) => {
     setMobileOpen(false);
     dispatch(setSelectedConversation(conversation));
-    const messages = await getMessages(conversation._id);
-    dispatch(setMessages(messages));
-     dispatch(setArtifacts(messages.artifacts));
   };
 
   const PanelIcon = () => (
