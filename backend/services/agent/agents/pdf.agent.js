@@ -171,7 +171,7 @@ Rules:
     const downloadUrl =
       await getDownloadUrl(
         fileName,
-        24*60*60
+        600
       );
 
     return {
