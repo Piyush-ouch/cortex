@@ -84,45 +84,20 @@ Formatting:
 
  ];
 
- history.forEach((msg)=>{
+  history.forEach((msg) => {
+    if (msg.role === "user") {
+      messages.push(new HumanMessage(msg.content));
+    }
+    if (msg.role === "assistant") {
+      messages.push(new AIMessage(msg.content));
+    }
+  });
 
-  if(
-   msg.role === "user"
-  ){
-
-   messages.push(
-
-    new HumanMessage(
-     msg.content
-    )
-
-   );
-
+  const lastMsg = history[history.length - 1];
+  if (!lastMsg || lastMsg.role !== "user" || lastMsg.content !== state.prompt) {
+    messages.push(new HumanMessage(state.prompt));
   }
 
-  if(
-   msg.role === "assistant"
-  ){
-
-   messages.push(
-
-    new AIMessage(
-     msg.content
-    )
-
-   );
-
-  }
-
- });
-
- messages.push(
-
-  new HumanMessage(
-   state.prompt
-  )
-
- );
 
  const response = await llm.invoke(messages);
 

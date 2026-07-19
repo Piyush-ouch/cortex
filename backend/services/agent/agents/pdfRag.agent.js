@@ -11,7 +11,7 @@ import { getModel }
 from "../utils/model.js";
 import { QdrantVectorStore } from "@langchain/qdrant";
 export const pdfRagAgent = async (state) => {
-
+  let collectionName = null;
   try {
 
     const buffer =
@@ -48,7 +48,7 @@ export const pdfRagAgent = async (state) => {
 
       ]);
 
-   const collectionName =
+   collectionName =
 `pdf-${Date.now()}`;
 
 const vectorStore =await createVectorStore(
@@ -136,15 +136,17 @@ response.content
 
     try{
 
-        fs.unlinkSync(
-            state.file.path
-        );
+        if (state.file?.path && fs.existsSync(state.file.path)) {
+            fs.unlinkSync(state.file.path);
+        }
 
-        await QdrantVectorStore.deleteCollection(
+        if (collectionName) {
+            await QdrantVectorStore.deleteCollection(
 
-            collectionName
+                collectionName
 
-        );
+            );
+        }
 
     }
 

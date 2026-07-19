@@ -51,8 +51,12 @@ const [showBilling, setShowBilling] =useState(false);
     dispatch(setSelectedConversation(conversation));
     const messages = await getMessages(conversation._id);
     dispatch(setMessages(messages));
-     dispatch(setArtifacts(messages.artifacts));
+    const latestArtifactMessage = Array.isArray(messages)
+      ? [...messages].reverse().find(msg => msg.artifacts && msg.artifacts.length > 0)
+      : null;
+    dispatch(setArtifacts(latestArtifactMessage ? latestArtifactMessage.artifacts : []));
   };
+
 
   const PanelIcon = () => (
     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
