@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, MessageSquare, Settings, LogOut, User, PenSquare, Menu, X, Coins, ConeIcon, CoinsIcon, BookOpen } from "lucide-react";
+import { Plus, MessageSquare, Settings, LogOut, User, PenSquare, Menu, X, Coins, ConeIcon, CoinsIcon, BookOpen, BarChart3 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../utils/axios";
 import { setUserData } from "../redux/user.slice";
@@ -9,6 +9,7 @@ import { getMessages } from "../features/message.api";
 import { setArtifacts, setMessages } from "../redux/message.slice";
 import BillingDrawer from "./BillingDrawer";
 import KnowledgeBaseDrawer from "./KnowledgeBaseDrawer";
+import AnalyticsModal from "./AnalyticsModal";
 
 export default function Sidebar() {
   const [hovered, setHovered]     = useState(null);
@@ -20,6 +21,7 @@ export default function Sidebar() {
   const dispatch = useDispatch();
   const [showBilling, setShowBilling] = useState(false);
   const [showKB, setShowKB] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
 
   const logout = async () => {
     try {
@@ -91,6 +93,14 @@ export default function Sidebar() {
         <BookOpen size={16} />
       </button>
 
+      <button
+        onClick={() => setShowAnalytics(true)}
+        title="Analytics Dashboard"
+        className="flex items-center justify-center w-9 h-9 rounded-xl text-cyan-400 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer mt-1"
+      >
+        <BarChart3 size={16} />
+      </button>
+
       <div className="flex-1 flex flex-col items-center gap-1 overflow-y-auto w-full px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden mt-1">
         {conversations.map((chat) => {
           const isActive = selectedConversation?._id === chat._id;
@@ -148,7 +158,7 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* New Chat & KB Buttons */}
+      {/* New Chat & KB & Analytics Buttons */}
       <div className="px-3 space-y-1 mb-3">
         <button
           onClick={handleCreateConversation}
@@ -163,6 +173,13 @@ export default function Sidebar() {
         >
           <BookOpen size={15} className="text-indigo-400" />
           <span>Knowledge Base</span>
+        </button>
+        <button
+          onClick={() => setShowAnalytics(true)}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] font-medium text-cyan-300 bg-cyan-500/10 hover:bg-cyan-500/15 border border-cyan-500/20 transition-all duration-150 cursor-pointer"
+        >
+          <BarChart3 size={15} className="text-cyan-400" />
+          <span>Usage Analytics</span>
         </button>
       </div>
 
@@ -211,6 +228,13 @@ export default function Sidebar() {
               <p className="text-[10.5px] text-slate-500">{userData.plan || "Free Plan"}</p>
             </div>
             <div className="flex items-center gap-1">
+              <button
+                onClick={() => setShowAnalytics(true)}
+                title="Usage Analytics"
+                className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-cyan-400 cursor-pointer hover:bg-white/[0.08] transition-all duration-150"
+              >
+                <BarChart3 size={15} />
+              </button>
               <button
                 onClick={() => setShowKB(true)}
                 title="Knowledge Base"
@@ -275,6 +299,11 @@ export default function Sidebar() {
       <KnowledgeBaseDrawer
         isOpen={showKB}
         onClose={() => setShowKB(false)}
+      />
+
+      <AnalyticsModal
+        isOpen={showAnalytics}
+        onClose={() => setShowAnalytics(false)}
       />
     </>
   );
