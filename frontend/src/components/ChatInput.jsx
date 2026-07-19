@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { Send, Paperclip,  Square, Zap, MessageSquare, Code2, Presentation, Image as ImageIcon, Globe, FileText,X } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage, setArtifacts, setIsLoading, appendStreamingToken, setStreamingStatus, updateLastAssistantMessage } from "../redux/message.slice";
-import { sendPromptStream } from "../features/agent.api";
+import { addMessage, setArtifacts, setIsLoading } from "../redux/message.slice";
+import { sendPrompt } from "../features/agent.api";
 import { Mic, MicOff } from "lucide-react";
 import { useEffect } from "react";
 import { createConversation, updateConversations } from "../features/conversation.api";
@@ -171,11 +171,13 @@ const toggleMic = () => {
 
   const handleSend = async () => {
     const prompt = value.trim();
-    if (!prompt || isLoading) return;
+    if (!prompt) return;
 
     dispatch(setIsLoading(true));
 
     try {
+
+
       let conversation = selectedConversation;
 
       if (!conversation) {
@@ -194,55 +196,67 @@ const toggleMic = () => {
       setValue("");
 
       const formData = new FormData();
-      formData.append("conversationId", conversation._id);
-      formData.append("prompt", prompt);
-      formData.append("agent", selectedAgent);
 
-      if (selectedFile) {
-        formData.append("file", selectedFile);
-      }
+formData.append(
+    "conversationId",
+    conversation._id
+);
 
-      setSelectedFile(null);
+formData.append(
+    "prompt",
+    prompt
+);
 
-      // Create placeholder assistant message for streaming
-      dispatch(addMessage({ role: "assistant", content: "" }));
+formData.append(
+    "agent",
+    selectedAgent
+);
 
-      await sendPromptStream(formData, {
-        onStatus: (statusData) => {
-          dispatch(setStreamingStatus(statusData));
-        },
-        onToken: (tokenText) => {
-          dispatch(appendStreamingToken(tokenText));
-        },
-        onDone: (doneData) => {
-          dispatch(updateLastAssistantMessage({
-            content: doneData.answer,
-            images: doneData.images || []
-          }));
-          if (doneData.artifacts && doneData.artifacts.length > 0) {
-            dispatch(setArtifacts(doneData.artifacts));
-          }
-        },
-        onError: (errData) => {
-          setBanner?.({
-            open: true,
-            title: errData.title || "Something went wrong",
-            message: errData.message || "Please try again."
-          });
-        }
-      });
-    } catch (error) {
-      console.error("handleSend Error:", error);
-      setBanner?.({
-        open: true,
-        title: error.title || "Something went wrong",
-        message: error.message || "Please try again."
-      });
-    } finally {
-      dispatch(setIsLoading(false));
-    }
-  };
+if(selectedFile){
 
+    formData.append(
+        "file",
+        selectedFile
+    );
+
+}
+
+setSelectedFile(null)
+
+      const data = await sendPrompt(formData);
+    console.log(data)
+     dispatch(
+  addMessage({
+    role: "assistant",
+    content: data.answer,
+    images:data.images
+  })
+);
+
+console.log(data)
+
+if(data.artifacts){
+  dispatch(
+    setArtifacts(
+      data.artifacts
+    )
+  );
+}}
+catch(error){
+
+  setBanner({
+
+    open:true,
+
+    title:
+      error.response?.data?.title ||
+      "Something went wrong",
+
+    message:
+      error.response?.data?.message ||
+      "Please try again."
+
+  });
 
 }
   finally {

@@ -76,4 +76,4 @@ export const sendPromptStream = async (formData, { onStatus, onToken, onDone, on
     onError?.({ message: error.message });
     throw error;
   }
-};
+};

@@ -1,13 +1,13 @@
 import MessageBubble from "./MessageBubble";
+
 import { useDispatch, useSelector } from "react-redux";
 import { getMessages } from "../features/message.api";
 import { setArtifacts, setMessages } from "../redux/message.slice";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
-
 function NeuralPulse() {
   return (
-    <div className="relative w-8 h-8 flex items-center justify-center shrink-0">
+    <div className="relative w-9 h-9 flex items-center justify-center shrink-0">
       {[0, 0.45, 0.9].map((delay, i) => (
         <motion.span
           key={i}
@@ -28,40 +28,6 @@ function NeuralPulse() {
         animate={{ scale: [1, 1.25, 1] }}
         transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
       />
-    </div>
-  );
-}
-
-function AgentStatusBadge({ status }) {
-  const agentIcons = {
-    router: "⚡",
-    search: "🌐",
-    coding: "💻",
-    pdf: "📄",
-    ppt: "📊",
-    image: "🖼️",
-    vision: "👁️",
-    pdf_rag: "🔍",
-    chat: "💬"
-  };
-
-  const icon = agentIcons[status?.agent] || "⚡";
-  const label = status?.label || "Processing request...";
-
-  return (
-    <div className="flex items-center gap-3 py-1">
-      <NeuralPulse />
-      <motion.div
-        key={status?.agent + status?.label}
-        initial={{ opacity: 0, scale: 0.95, y: 4 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: -4 }}
-        className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-indigo-500/15 via-violet-500/15 to-purple-500/15 border border-indigo-500/25 text-indigo-300 text-[12px] font-medium shadow-sm backdrop-blur-md"
-      >
-        <span className="text-sm animate-pulse">{icon}</span>
-        <span className="capitalize font-semibold text-slate-200">{status?.agent || "agent"}:</span>
-        <span className="text-slate-300">{label}</span>
-      </motion.div>
     </div>
   );
 }
@@ -116,32 +82,49 @@ function GeneratingIndicator() {
 }
 
 export default function MessageList() {
+
   const bottomRef = useRef(null);
-  const { messages, isLoading, streamingStatus } = useSelector(state => state.message);
+  const { messages, isLoading } = useSelector(state => state.message);
   const { selectedConversation } = useSelector(state => state.conversation);
   const dispatch = useDispatch();
+useEffect(() => {
 
-  useEffect(() => {
-    requestAnimationFrame(() => {
-      bottomRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "end"
-      });
+  requestAnimationFrame(() => {
+
+    bottomRef.current?.scrollIntoView({
+
+      behavior: "smooth",
+
+      block: "end"
+
     });
-  }, [messages, isLoading, streamingStatus]);
 
+  });
+
+}, [messages.length, isLoading]);
   useEffect(() => {
     if (selectedConversation?.title === "New Chat") return;
     const get = async () => {
       const data = await getMessages(selectedConversation?._id);
       dispatch(setMessages(data));
-      const latestArtifactMessage = [...data]
-        .reverse()
-        .find(msg => msg.artifacts && msg.artifacts.length > 0);
+      const latestArtifactMessage =
+  [...data]
+    .reverse()
+    .find(
+      msg =>
+        msg.artifacts &&
+        msg.artifacts.length > 0
+    );
 
-      if (latestArtifactMessage) {
-        dispatch(setArtifacts(latestArtifactMessage.artifacts));
-      }
+if (latestArtifactMessage) {
+
+  dispatch(
+    setArtifacts(
+      latestArtifactMessage.artifacts
+    )
+  );
+
+}
     };
     get();
   }, [selectedConversation?._id]);
@@ -185,16 +168,13 @@ export default function MessageList() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
             >
-              {streamingStatus ? (
-                <AgentStatusBadge status={streamingStatus} />
-              ) : (
-                <GeneratingIndicator />
-              )}
+              <GeneratingIndicator />
             </motion.div>
           )}
+        
         </>
       )}
-      <div ref={bottomRef} />
+        <div ref={bottomRef} />
     </div>
   );
-}
+}

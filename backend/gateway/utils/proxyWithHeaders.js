@@ -11,4 +11,4 @@ export const proxyWithUser = (serviceUrl) => {
       return proxyReqOpts;
     }
   });
-};
+};

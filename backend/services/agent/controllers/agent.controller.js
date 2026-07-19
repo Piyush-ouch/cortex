@@ -22,8 +22,6 @@ export const chat = async (req, res, next) => {
     const acceptsSse = req.headers.accept?.includes("text/event-stream");
     const isStreamReq = acceptsSse || stream === true || stream === "true";
 
-    console.log("Chat request body:", req.body, "Stream mode:", isStreamReq);
-
     await addMessage(conversationId, "user", prompt);
     axios.post(`${process.env.CHAT_SERVICE}/save-message`, {
       conversationId,
@@ -134,4 +132,4 @@ export const chat = async (req, res, next) => {
     }
     next(error);
   }
-};
+};
