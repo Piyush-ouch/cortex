@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, MessageSquare, Settings, LogOut, User, PenSquare, Menu, X, Coins, ConeIcon, CoinsIcon, BookOpen, BarChart3 } from "lucide-react";
+import { Plus, MessageSquare, Settings, LogOut, User, PenSquare, Menu, X, Coins, ConeIcon, CoinsIcon, BookOpen, BarChart3, Sparkles } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../utils/axios";
 import { setUserData } from "../redux/user.slice";
@@ -10,6 +10,7 @@ import { setArtifacts, setMessages } from "../redux/message.slice";
 import BillingDrawer from "./BillingDrawer";
 import KnowledgeBaseDrawer from "./KnowledgeBaseDrawer";
 import AnalyticsModal from "./AnalyticsModal";
+import AgentMarketplaceDrawer from "./AgentMarketplaceDrawer";
 
 export default function Sidebar() {
   const [hovered, setHovered]     = useState(null);
@@ -22,6 +23,7 @@ export default function Sidebar() {
   const [showBilling, setShowBilling] = useState(false);
   const [showKB, setShowKB] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [showMarketplace, setShowMarketplace] = useState(false);
 
   const logout = async () => {
     try {
@@ -83,6 +85,14 @@ export default function Sidebar() {
         className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer"
       >
         <Plus size={17} />
+      </button>
+
+      <button
+        onClick={() => setShowMarketplace(true)}
+        title="Agent Marketplace"
+        className="flex items-center justify-center w-9 h-9 rounded-xl text-purple-400 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer mt-1"
+      >
+        <Sparkles size={16} />
       </button>
 
       <button
@@ -158,7 +168,7 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* New Chat & KB & Analytics Buttons */}
+      {/* New Chat & Marketplace Buttons */}
       <div className="px-3 space-y-1 mb-3">
         <button
           onClick={handleCreateConversation}
@@ -166,6 +176,13 @@ export default function Sidebar() {
         >
           <Plus size={16} className="text-indigo-400" />
           <span>New Chat</span>
+        </button>
+        <button
+          onClick={() => setShowMarketplace(true)}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] font-medium text-purple-300 bg-purple-500/10 hover:bg-purple-500/15 border border-purple-500/20 transition-all duration-150 cursor-pointer"
+        >
+          <Sparkles size={15} className="text-purple-400" />
+          <span>Agent Marketplace</span>
         </button>
         <button
           onClick={() => setShowKB(true)}
@@ -228,6 +245,13 @@ export default function Sidebar() {
               <p className="text-[10.5px] text-slate-500">{userData.plan || "Free Plan"}</p>
             </div>
             <div className="flex items-center gap-1">
+              <button
+                onClick={() => setShowMarketplace(true)}
+                title="Agent Marketplace"
+                className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-purple-400 cursor-pointer hover:bg-white/[0.08] transition-all duration-150"
+              >
+                <Sparkles size={15} />
+              </button>
               <button
                 onClick={() => setShowAnalytics(true)}
                 title="Usage Analytics"
@@ -304,6 +328,11 @@ export default function Sidebar() {
       <AnalyticsModal
         isOpen={showAnalytics}
         onClose={() => setShowAnalytics(false)}
+      />
+
+      <AgentMarketplaceDrawer
+        isOpen={showMarketplace}
+        onClose={() => setShowMarketplace(false)}
       />
     </>
   );

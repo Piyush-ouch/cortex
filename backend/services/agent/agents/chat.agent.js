@@ -3,6 +3,7 @@ import { getMemory } from "../utils/memory.js";
 import { getModel } from "../utils/model.js";
 import { checkAgentLimit } from "../config/agentRateLimit.js";
 import { deductCredits } from "../utils/deductCredits.js";
+import CustomAgent from "../models/customAgent.model.js";
 
 export const chatAgent = async (state) => {
   await checkAgentLimit(state.userId, "chat");
@@ -11,13 +12,29 @@ export const chatAgent = async (state) => {
   const llm = getModel("chat");
   const history = await getMemory(state.conversationId);
 
+  let systemPromptText = `You are CortexAI, an intelligent AI assistant.`;
+
+  // Look up custom agent system prompt if customAgent ID is provided or state.agent is a Mongo ID
+  if (state.customSystemPrompt) {
+    systemPromptText = state.customSystemPrompt;
+  } else if (state.agent && state.agent.length === 24) {
+    try {
+      const customAgent = await CustomAgent.findById(state.agent);
+      if (customAgent) {
+        systemPromptText = `You are ${customAgent.name}, a specialized AI Agent.\n\n${customAgent.systemPrompt}`;
+      }
+    } catch (e) {
+      console.error("Custom Agent lookup error:", e.message);
+    }
+  }
+
   const searchContext = state.searchResults
     ? `\nWeb Search Results:\n\n${state.searchResults}\n\nAnswer the user using only the above search results.\n`
     : "";
 
   const messages = [
     new SystemMessage(`
-You are CortexAI, an intelligent AI assistant.
+${systemPromptText}
 
 ${searchContext}
 
@@ -41,7 +58,7 @@ Formatting:
 `)
   ];
 
-  // Prevent duplicating prompt: if memory history already ends with the current user prompt, exclude it from history iteration
+  // Prevent duplicating prompt
   const historyExceptCurrent = (
     history.length > 0 &&
     history[history.length - 1].role === "user" &&
@@ -56,7 +73,6 @@ Formatting:
     }
   });
 
-  // Append current prompt exactly once
   messages.push(new HumanMessage(state.prompt));
 
   const response = await llm.invoke(messages);
