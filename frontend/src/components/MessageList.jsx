@@ -1,10 +1,11 @@
 import MessageBubble from "./MessageBubble";
-
 import { useDispatch, useSelector } from "react-redux";
 import { getMessages } from "../features/message.api";
 import { setArtifacts, setMessages } from "../redux/message.slice";
 import { motion, AnimatePresence } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
+import { Workflow, Globe, Code2, Presentation, Zap } from "lucide-react";
+
 function NeuralPulse() {
   return (
     <div className="relative w-9 h-9 flex items-center justify-center shrink-0">
@@ -29,6 +30,34 @@ function NeuralPulse() {
         transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
       />
     </div>
+  );
+}
+
+function AgentStatusBadge({ status }) {
+  if (!status) return null;
+  const isTeam = status.agent === "team_workflow";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 4 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -4 }}
+      className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-medium max-w-fit mb-2 shadow-sm"
+    >
+      {isTeam ? (
+        <div className="flex items-center gap-1.5">
+          <Workflow size={14} className="text-cyan-400 animate-spin" />
+          <span className="font-semibold text-cyan-300">Multi-Agent Team Workflow:</span>
+          <span className="text-slate-300">{status.label || "Executing Search → Coding → PPT..."}</span>
+        </div>
+      ) : (
+        <div className="flex items-center gap-1.5">
+          <Zap size={14} className="text-indigo-400 animate-pulse" />
+          <span className="capitalize font-semibold text-indigo-300">[{status.agent}]</span>
+          <span className="text-slate-300">{status.label}</span>
+        </div>
+      )}
+    </motion.div>
   );
 }
 
@@ -68,7 +97,7 @@ function GeneratingIndicator() {
                   duration: 1.4,
                   repeat: Infinity,
                   ease: "easeInOut",
-                  delay: i * 0.07,
+                  delay: i * 0.06,
                 }}
               >
                 {ch}
@@ -82,49 +111,32 @@ function GeneratingIndicator() {
 }
 
 export default function MessageList() {
-
-  const bottomRef = useRef(null);
-  const { messages, isLoading } = useSelector(state => state.message);
-  const { selectedConversation } = useSelector(state => state.conversation);
+  const { messages, isLoading, streamingStatus } = useSelector((state) => state.message);
+  const { selectedConversation } = useSelector((state) => state.conversation);
   const dispatch = useDispatch();
-useEffect(() => {
+  const bottomRef = useRef(null);
 
-  requestAnimationFrame(() => {
-
-    bottomRef.current?.scrollIntoView({
-
-      behavior: "smooth",
-
-      block: "end"
-
+  useEffect(() => {
+    requestAnimationFrame(() => {
+      bottomRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "end"
+      });
     });
+  }, [messages.length, isLoading, streamingStatus]);
 
-  });
-
-}, [messages.length, isLoading]);
   useEffect(() => {
     if (selectedConversation?.title === "New Chat") return;
     const get = async () => {
       const data = await getMessages(selectedConversation?._id);
       dispatch(setMessages(data));
-      const latestArtifactMessage =
-  [...data]
-    .reverse()
-    .find(
-      msg =>
-        msg.artifacts &&
-        msg.artifacts.length > 0
-    );
+      const latestArtifactMessage = Array.isArray(data)
+        ? [...data].reverse().find(msg => msg.artifacts && msg.artifacts.length > 0)
+        : null;
 
-if (latestArtifactMessage) {
-
-  dispatch(
-    setArtifacts(
-      latestArtifactMessage.artifacts
-    )
-  );
-
-}
+      if (latestArtifactMessage) {
+        dispatch(setArtifacts(latestArtifactMessage.artifacts));
+      }
     };
     get();
   }, [selectedConversation?._id]);
@@ -136,10 +148,14 @@ if (latestArtifactMessage) {
           <div className="flex flex-col gap-1.5">
             <h1 className="text-[20px] font-semibold text-slate-200 tracking-tight">CortexAI</h1>
             <h3 className="text-[15px] font-semibold text-slate-400 tracking-tight">How can I help you?</h3>
-            <p className="text-[13px] text-slate-600 max-w-[260px] leading-relaxed">Ask me anything — code, ideas, explanations, or just a quick question.</p>
+            <p className="text-[13px] text-slate-600 max-w-[260px] leading-relaxed">Ask me anything — code, ideas, explanations, or multi-agent workflows.</p>
           </div>
           <div className="flex flex-wrap justify-center gap-2 mt-1">
-            {["Write a Netflix clone", "Explain Redis", "Build a dashboard"].map((s) => (
+            {[
+              "Research SaaS trends & build landing page",
+              "Build a Netflix clone",
+              "Design presentation deck"
+            ].map((s) => (
               <button
                 key={s}
                 className="text-[12px] text-slate-400 bg-white/[0.04] border border-white/[0.07] px-3.5 py-1.5 rounded-lg hover:bg-white/[0.08] hover:text-slate-200 transition-colors duration-150 cursor-pointer"
@@ -162,7 +178,9 @@ if (latestArtifactMessage) {
             </motion.div>
           ))}
 
-          {isLoading && (
+          {streamingStatus && <AgentStatusBadge status={streamingStatus} />}
+
+          {isLoading && !streamingStatus && (
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
@@ -171,10 +189,9 @@ if (latestArtifactMessage) {
               <GeneratingIndicator />
             </motion.div>
           )}
-        
         </>
       )}
-        <div ref={bottomRef} />
+      <div ref={bottomRef} />
     </div>
   );
 }

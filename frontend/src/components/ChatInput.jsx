@@ -44,7 +44,9 @@ ppt:"Create a presentation about...",
 
 image:"Describe the image...",
 
-search:"Search the web..."
+search:"Search the web...",
+
+team_workflow:"Execute Multi-Agent Team Workflow (Research → Build Prototype → Create Deck)..."
 
 };
 
@@ -54,6 +56,12 @@ search:"Search the web..."
     id:"auto",
     icon:Zap,
     label:"Auto"
+  },
+
+  {
+    id:"team_workflow",
+    icon:Workflow,
+    label:"Team Workflow"
   },
 
   {

@@ -12,8 +12,10 @@ const NODE_STATUS_LABELS = {
   ppt: { agent: "ppt", label: "Designing presentation slides..." },
   image: { agent: "image", label: "Generating AI image..." },
   vision: { agent: "vision", label: "Analyzing image content..." },
-  pdf_rag: { agent: "pdf_rag", label: "Searching PDF context..." }
+  pdf_rag: { agent: "pdf_rag", label: "Searching PDF context..." },
+  team_workflow: { agent: "team_workflow", label: "Multi-Agent Team Workflow: Executing Search → Coding → PPT Chain..." }
 };
+
 
 export const chat = async (req, res, next) => {
   try {
