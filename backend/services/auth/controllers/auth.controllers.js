@@ -142,11 +142,16 @@ export const logout =
         req.cookies?.session;
 
       if (sessionId) {
-
-        await redis.del(
-          `session:${sessionId}`
-        );
-
+        const sessionData = await redis.get(`session:${sessionId}`);
+        if (sessionData) {
+          try {
+            const { userId } = JSON.parse(sessionData);
+            if (userId) {
+              await redis.del(`user-session:${userId}`);
+            }
+          } catch (e) {}
+        }
+        await redis.del(`session:${sessionId}`);
       }
 
       res.clearCookie(

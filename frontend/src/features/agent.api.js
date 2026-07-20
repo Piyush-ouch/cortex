@@ -7,7 +7,8 @@ export const sendPrompt = async (payload) => {
 
 export const sendPromptStream = async (formData, { onStatus, onToken, onDone, onError }) => {
   try {
-    const response = await fetch("http://localhost:5000/api/agent/chat", {
+    const baseUrl = import.meta.env.VITE_SERVER_URL || "http://localhost:8000";
+    const response = await fetch(`${baseUrl}/api/agent/chat`, {
       method: "POST",
       body: formData,
       credentials: "include",

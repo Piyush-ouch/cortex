@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send, Paperclip,  Square, Zap, MessageSquare, Code2, Presentation, Image as ImageIcon, Globe, FileText,X } from "lucide-react";
+import { Send, Paperclip, Square, Zap, MessageSquare, Code2, Presentation, Image as ImageIcon, Globe, FileText, X, Workflow } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage, setArtifacts, setIsLoading } from "../redux/message.slice";
 import { sendPrompt } from "../features/agent.api";

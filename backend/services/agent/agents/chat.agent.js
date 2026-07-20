@@ -28,8 +28,12 @@ export const chatAgent = async (state) => {
     }
   }
 
+  const formattedSearchResults = typeof state.searchResults === "string"
+    ? state.searchResults
+    : JSON.stringify(state.searchResults?.results || state.searchResults, null, 2);
+
   const searchContext = state.searchResults
-    ? `\nWeb Search Results:\n\n${state.searchResults}\n\nAnswer the user using only the above search results.\n`
+    ? `\nWeb Search Results:\n\n${formattedSearchResults}\n\nAnswer the user using only the above search results.\n`
     : "";
 
   const messages = [

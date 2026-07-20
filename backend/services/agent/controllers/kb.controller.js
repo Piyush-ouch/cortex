@@ -1,5 +1,5 @@
 import fs from "fs";
-import { PDFParse } from "pdf-parse";
+import pdf from "pdf-parse";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import KnowledgeDocument from "../models/knowledgeDocument.model.js";
 import { addDocumentsToVectorStore } from "../utils/vectorStore.js";
@@ -23,8 +23,7 @@ export const uploadDocument = async (req, res, next) => {
     let extractedText = "";
 
     if (mimetype === "application/pdf" || fileName.toLowerCase().endsWith(".pdf")) {
-      const pdf = new PDFParse({ data: buffer });
-      const pdfResult = await pdf.getText();
+      const pdfResult = await pdf(buffer);
       extractedText = pdfResult.text;
     } else {
       extractedText = buffer.toString("utf-8");

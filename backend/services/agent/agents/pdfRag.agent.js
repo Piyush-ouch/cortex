@@ -1,5 +1,5 @@
 import fs from "fs";
-import { PDFParse } from "pdf-parse";
+import pdf from "pdf-parse";
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import { createVectorStore, getVectorStore } from "../utils/vectorStore.js";
 import { HumanMessage, SystemMessage } from "@langchain/core/messages";
@@ -17,8 +17,7 @@ export const pdfRagAgent = async (state) => {
       let text = "";
 
       if (state.file.mimetype === "application/pdf" || state.file.originalname.endsWith(".pdf")) {
-        const pdf = new PDFParse({ data: buffer });
-        const result = await pdf.getText();
+        const result = await pdf(buffer);
         text = result.text;
       } else {
         text = buffer.toString("utf-8");

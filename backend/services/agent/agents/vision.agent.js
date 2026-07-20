@@ -25,6 +25,13 @@ export const visionAgent = async (state) => {
     const llm =
       getModel("vision");
 
+    if (!state.file || !state.file.path) {
+      return {
+        ...state,
+        response: "⚠️ Please upload an image file to analyze with the Vision Agent."
+      };
+    }
+
     const imageBuffer =
       await fs.readFile(
         state.file.path
