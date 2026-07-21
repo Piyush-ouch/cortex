@@ -43,6 +43,31 @@ export const messageSlice = createSlice({
     },
     setArtifacts: (state, action) => {
       state.artifacts = action.payload;
+    },
+    updateArtifactFiles: (state, action) => {
+      const { id, files } = action.payload;
+      if (Array.isArray(state.artifacts)) {
+        state.artifacts = state.artifacts.map((art) => {
+          if (!id || art.id === id) {
+            return { ...art, files };
+          }
+          return art;
+        });
+      }
+      if (Array.isArray(state.messages)) {
+        state.messages = state.messages.map((msg) => {
+          if (Array.isArray(msg.artifacts)) {
+            const updatedArts = msg.artifacts.map((art) => {
+              if (!id || art.id === id) {
+                return { ...art, files };
+              }
+              return art;
+            });
+            return { ...msg, artifacts: updatedArts };
+          }
+          return msg;
+        });
+      }
     }
   }
 })
@@ -54,7 +79,8 @@ export const {
   appendStreamingToken,
   setIsLoading,
   setStreamingStatus,
-  setArtifacts
+  setArtifacts,
+  updateArtifactFiles
 } = messageSlice.actions
 
 export default messageSlice.reducer

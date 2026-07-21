@@ -1,10 +1,13 @@
-import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import Editor from "@monaco-editor/react";
 import { FiCode } from "react-icons/fi";
 import { detectLanguage } from "../utils/detectLanguage";
-import { Code2, Eye, PanelRightClose, PanelRightOpen, X, Copy, Check } from "lucide-react";
+import { Code2, Eye, PanelRightClose, PanelRightOpen, X, Copy, Check, Terminal, Zap, Loader2, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import SandboxConsole from "./SandboxConsole";
+import { updateArtifactFiles } from "../redux/message.slice";
+import api from "../utils/axios";
 
 export default function ArtifactPanel() {
   const [tab, setTab]               = useState("code");
@@ -13,8 +16,38 @@ export default function ArtifactPanel() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [copied, setCopied]         = useState(false);
 
+  // Live Console & Auto-Healing States
+  const [logs, setLogs]             = useState([]);
+  const [errors, setErrors]         = useState([]);
+  const [isFixing, setIsFixing]     = useState(false);
+  const [autoFixStatus, setAutoFixStatus] = useState(null);
+
+  const dispatch = useDispatch();
   const { artifacts } = useSelector(state => state.message);
   const artifact = artifacts?.[0];
+
+  // Reset console output when artifact changes
+  useEffect(() => {
+    setLogs([]);
+    setErrors([]);
+    setAutoFixStatus(null);
+  }, [artifact?.id]);
+
+  // Capture postMessage console logs and exceptions from sandbox iframe
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.data?.type === "SANDBOX_CONSOLE_LOG" && event.data?.log) {
+        const log = event.data.log;
+        if (log.type === "error") {
+          setErrors(prev => [...prev, log]);
+        } else {
+          setLogs(prev => [...prev, log]);
+        }
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   if (!artifact) return null;
 
@@ -24,11 +57,50 @@ export default function ArtifactPanel() {
   const jsFile     = artifact?.files?.find(f => f.name === "script.js");
   const canPreview = Boolean(htmlFile);
 
+  const interceptorScript = `<script>
+(function() {
+  function sendLog(type, args, stack) {
+    try {
+      window.parent.postMessage({
+        type: 'SANDBOX_CONSOLE_LOG',
+        log: {
+          type: type,
+          args: Array.from(args).map(function(a) {
+            try { return typeof a === 'object' ? JSON.stringify(a) : String(a); }
+            catch(e) { return String(a); }
+          }),
+          message: Array.from(args).map(function(a) { return typeof a === 'object' ? JSON.stringify(a) : String(a); }).join(' '),
+          stack: stack || null,
+          timestamp: Date.now()
+        }
+      }, '*');
+    } catch(e) {}
+  }
+  var origLog = console.log;
+  var origWarn = console.warn;
+  var origError = console.error;
+  console.log = function() { sendLog('log', arguments); if(origLog) origLog.apply(console, arguments); };
+  console.warn = function() { sendLog('warn', arguments); if(origWarn) origWarn.apply(console, arguments); };
+  console.error = function() { sendLog('error', arguments); if(origError) origError.apply(console, arguments); };
+  window.onerror = function(msg, url, line, col, err) {
+    var stack = err && err.stack ? err.stack : ('Error at line ' + line + ':' + col);
+    sendLog('error', [msg], stack);
+    return false;
+  };
+  window.onunhandledrejection = function(e) {
+    var msg = e.reason ? (e.reason.message || String(e.reason)) : 'Unhandled Promise Rejection';
+    var stack = e.reason && e.reason.stack ? e.reason.stack : null;
+    sendLog('error', [msg], stack);
+  };
+})();
+</script>`;
+
   const previewDoc = `<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+${interceptorScript}
 <style>${cssFile?.content || ""}</style>
 </head>
 <body>
@@ -43,7 +115,43 @@ ${htmlFile?.content || ""}
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleAutoFix = async (targetError) => {
+    const errToFix = targetError || errors[errors.length - 1];
+    if (!errToFix || isFixing) return;
 
+    setIsFixing(true);
+    setAutoFixStatus({ type: "info", message: "⚡ AI Self-Healing Engine analyzing stack trace & repairing code..." });
+
+    try {
+      const { data } = await api.post("/api/agent/auto-fix", {
+        artifactTitle: artifact.title,
+        files: artifact.files,
+        error: errToFix
+      });
+
+      if (data.success && Array.isArray(data.files)) {
+        dispatch(updateArtifactFiles({ id: artifact.id, files: data.files }));
+        setErrors([]);
+        setAutoFixStatus({
+          type: "success",
+          message: "⚡ Runtime error resolved! Code repaired & hot-reloaded."
+        });
+      } else {
+        setAutoFixStatus({
+          type: "error",
+          message: data.message || "Failed to auto-fix runtime error."
+        });
+      }
+    } catch (err) {
+      console.error("Auto-Fix Error:", err);
+      setAutoFixStatus({
+        type: "error",
+        message: err.response?.data?.message || err.message || "Auto-fix execution failed."
+      });
+    } finally {
+      setIsFixing(false);
+    }
+  };
 
   /* ── Shared code panel content ── */
   const PanelContent = ({ onClose }) => (
@@ -81,22 +189,52 @@ ${htmlFile?.content || ""}
             <div className="flex items-center gap-1 bg-white/[0.04] border border-white/[0.06] p-1 rounded-lg">
               <button
                 onClick={() => setTab("code")}
-                className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors duration-150
+                className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors duration-150 cursor-pointer
                   ${tab === "code" ? "bg-indigo-500 text-white" : "text-slate-500 hover:text-slate-200"}`}
               >
                 <Code2 size={11} /> Code
               </button>
               <button
                 onClick={() => setTab("preview")}
-                className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors duration-150
+                className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors duration-150 cursor-pointer
                   ${tab === "preview" ? "bg-indigo-500 text-white" : "text-slate-500 hover:text-slate-200"}`}
               >
                 <Eye size={11} /> Preview
+              </button>
+              <button
+                onClick={() => setTab("console")}
+                className={`flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors duration-150 cursor-pointer relative
+                  ${tab === "console" ? "bg-indigo-500 text-white" : "text-slate-500 hover:text-slate-200"}`}
+              >
+                <Terminal size={11} /> Console
+                {errors.length > 0 && (
+                  <span className="w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold flex items-center justify-center -ml-0.5 animate-pulse">
+                    {errors.length}
+                  </span>
+                )}
               </button>
             </div>
           )}
         </div>
       </div>
+
+      {/* Auto-Fix Trigger Header Banner if Errors Detected */}
+      {errors.length > 0 && tab !== "console" && (
+        <div className="px-4 py-2 bg-rose-500/10 border-b border-rose-500/20 flex items-center justify-between gap-2 text-[12px]">
+          <div className="flex items-center gap-2 text-rose-300">
+            <Zap size={14} className="text-amber-400 fill-amber-400 animate-bounce" />
+            <span className="font-medium">Runtime Error Intercepted in Sandbox!</span>
+          </div>
+          <button
+            onClick={() => handleAutoFix()}
+            disabled={isFixing}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-gradient-to-r from-amber-500 to-rose-600 hover:from-amber-400 hover:to-rose-500 text-white shadow-md cursor-pointer border border-amber-400/30 transition-all"
+          >
+            {isFixing ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
+            <span>⚡ Auto-Fix Runtime Error</span>
+          </button>
+        </div>
+      )}
 
       {/* File tabs */}
       <AnimatePresence>
@@ -125,12 +263,22 @@ ${htmlFile?.content || ""}
         )}
       </AnimatePresence>
 
-      {/* Editor / Preview */}
-      <div className="flex-1 overflow-hidden">
+      {/* Editor / Preview / Console */}
+      <div className="flex-1 overflow-hidden relative">
         <AnimatePresence mode="wait">
           {tab === "preview" && canPreview ? (
             <motion.div key="preview" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="w-full h-full">
               <iframe title="preview" sandbox="allow-scripts" srcDoc={previewDoc} className="w-full h-full bg-white" />
+            </motion.div>
+          ) : tab === "console" ? (
+            <motion.div key="console" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="w-full h-full">
+              <SandboxConsole
+                logs={logs}
+                errors={errors}
+                onAutoFix={handleAutoFix}
+                isFixing={isFixing}
+                autoFixStatus={autoFixStatus}
+              />
             </motion.div>
           ) : (
             <motion.div key={`code-${activeFile}`} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }} className="w-full h-full">

@@ -1,5 +1,7 @@
 import fs from "fs";
-import pdf from "pdf-parse";
+import { createRequire } from "module";
+const require = createRequire(import.meta.url);
+const pdf = require("pdf-parse");
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters";
 import KnowledgeDocument from "../models/knowledgeDocument.model.js";
 import { addDocumentsToVectorStore } from "../utils/vectorStore.js";
