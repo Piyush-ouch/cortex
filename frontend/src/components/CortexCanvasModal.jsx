@@ -106,6 +106,7 @@ export default function CortexCanvasModal({ isOpen, onClose }) {
     try {
       const response = await fetch(`${import.meta.env.VITE_SERVER_URL}/api/agent/workflow/execute`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
           "Accept": "text/event-stream"

@@ -1,4 +1,5 @@
-import { getAllUserMemories, addDocumentsToVectorStore } from "../utils/userMemory.engine.js";
+import { getAllUserMemories } from "../utils/userMemory.engine.js";
+import { addDocumentsToVectorStore } from "../utils/vectorStore.js";
 import { Document } from "@langchain/core/documents";
 
 function getCollectionName(userId) {

@@ -12,6 +12,9 @@ const LIMITS = {
 };
 
 export const checkAgentLimit = async (userId, agent) => {
+  if (!userId || String(userId).startsWith("demo-")) {
+    return { remaining: 999, limit: 999 };
+  }
 
   const max = LIMITS[agent] ?? LIMITS.chat;
 

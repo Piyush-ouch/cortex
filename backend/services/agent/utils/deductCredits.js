@@ -1,12 +1,12 @@
 import axios from "axios";
 
 export const deductCredits = async (
-
     userId,
-
     agent
-
 ) => {
+    if (!userId || String(userId).startsWith("demo-")) {
+        return;
+    }
 
     try {
 
