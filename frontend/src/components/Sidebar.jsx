@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, MessageSquare, Settings, LogOut, User, PenSquare, Menu, X, Coins, ConeIcon, CoinsIcon, BookOpen, BarChart3, Sparkles, Brain } from "lucide-react";
+import { Plus, MessageSquare, Settings, LogOut, User, PenSquare, Menu, X, Coins, ConeIcon, CoinsIcon, BookOpen, BarChart3, Sparkles, Brain, Layers } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../utils/axios";
 import { setUserData } from "../redux/user.slice";
@@ -12,6 +12,7 @@ import KnowledgeBaseDrawer from "./KnowledgeBaseDrawer";
 import AnalyticsModal from "./AnalyticsModal";
 import AgentMarketplaceDrawer from "./AgentMarketplaceDrawer";
 import UserMemoryDrawer from "./UserMemoryDrawer";
+import CortexCanvasModal from "./CortexCanvasModal";
 
 export default function Sidebar() {
   const [hovered, setHovered]     = useState(null);
@@ -26,6 +27,7 @@ export default function Sidebar() {
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showMarketplace, setShowMarketplace] = useState(false);
   const [showMemory, setShowMemory] = useState(false);
+  const [showCanvas, setShowCanvas] = useState(false);
 
   const logout = async () => {
     try {
@@ -87,6 +89,14 @@ export default function Sidebar() {
         className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer"
       >
         <Plus size={17} />
+      </button>
+
+      <button
+        onClick={() => setShowCanvas(true)}
+        title="Cortex Canvas Flow Builder"
+        className="flex items-center justify-center w-9 h-9 rounded-xl text-indigo-400 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer mt-1"
+      >
+        <Layers size={16} />
       </button>
 
       <button
@@ -178,7 +188,7 @@ export default function Sidebar() {
         </button>
       </div>
 
-      {/* New Chat & Marketplace Buttons */}
+      {/* New Chat & Feature Buttons */}
       <div className="px-3 space-y-1 mb-3">
         <button
           onClick={handleCreateConversation}
@@ -186,6 +196,13 @@ export default function Sidebar() {
         >
           <Plus size={16} className="text-indigo-400" />
           <span>New Chat</span>
+        </button>
+        <button
+          onClick={() => setShowCanvas(true)}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] font-medium text-indigo-300 bg-indigo-500/10 hover:bg-indigo-500/15 border border-indigo-500/20 transition-all duration-150 cursor-pointer"
+        >
+          <Layers size={15} className="text-indigo-400" />
+          <span>Cortex Canvas</span>
         </button>
         <button
           onClick={() => setShowMemory(true)}
@@ -263,6 +280,13 @@ export default function Sidebar() {
             </div>
             <div className="flex items-center gap-1">
               <button
+                onClick={() => setShowCanvas(true)}
+                title="Cortex Canvas"
+                className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-indigo-400 cursor-pointer hover:bg-white/[0.08] transition-all duration-150"
+              >
+                <Layers size={15} />
+              </button>
+              <button
                 onClick={() => setShowMemory(true)}
                 title="AI Memory Bank"
                 className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-violet-400 cursor-pointer hover:bg-white/[0.08] transition-all duration-150"
@@ -275,20 +299,6 @@ export default function Sidebar() {
                 className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-purple-400 cursor-pointer hover:bg-white/[0.08] transition-all duration-150"
               >
                 <Sparkles size={15} />
-              </button>
-              <button
-                onClick={() => setShowAnalytics(true)}
-                title="Usage Analytics"
-                className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-cyan-400 cursor-pointer hover:bg-white/[0.08] transition-all duration-150"
-              >
-                <BarChart3 size={15} />
-              </button>
-              <button
-                onClick={() => setShowKB(true)}
-                title="Knowledge Base"
-                className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-indigo-400 cursor-pointer hover:bg-white/[0.08] transition-all duration-150"
-              >
-                <BookOpen size={15} />
               </button>
               <button
                 onClick={() => setShowBilling(true)}
@@ -338,6 +348,11 @@ export default function Sidebar() {
       `}>
         <SidebarContent />
       </div>
+
+      <CortexCanvasModal
+        isOpen={showCanvas}
+        onClose={() => setShowCanvas(false)}
+      />
 
       <UserMemoryDrawer
         isOpen={showMemory}
