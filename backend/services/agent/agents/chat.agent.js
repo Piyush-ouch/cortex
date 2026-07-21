@@ -4,6 +4,7 @@ import { getModel } from "../utils/model.js";
 import { checkAgentLimit } from "../config/agentRateLimit.js";
 import { deductCredits } from "../utils/deductCredits.js";
 import CustomAgent from "../models/customAgent.model.js";
+import { extractAndStoreUserMemories } from "../utils/userMemory.engine.js";
 
 export const chatAgent = async (state) => {
   await checkAgentLimit(state.userId, "chat");
@@ -28,6 +29,8 @@ export const chatAgent = async (state) => {
     }
   }
 
+  const memoryContextText = state.memoryContext || "";
+
   const formattedSearchResults = typeof state.searchResults === "string"
     ? state.searchResults
     : JSON.stringify(state.searchResults?.results || state.searchResults, null, 2);
@@ -39,6 +42,8 @@ export const chatAgent = async (state) => {
   const messages = [
     new SystemMessage(`
 ${systemPromptText}
+
+${memoryContextText}
 
 ${searchContext}
 
@@ -81,6 +86,13 @@ Formatting:
 
   const response = await llm.invoke(messages);
   const images = state.searchResults?.images || [];
+
+  // Extract new user memories in background asynchronously
+  if (state.userId) {
+    extractAndStoreUserMemories(state.userId, state.prompt, response.content).catch(err =>
+      console.error("Async Memory Extraction Error:", err.message)
+    );
+  }
 
   return {
     ...state,

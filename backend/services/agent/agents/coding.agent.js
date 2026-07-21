@@ -1,6 +1,7 @@
 import { checkAgentLimit } from "../config/agentRateLimit.js";
 import { deductCredits } from "../utils/deductCredits.js";
 import { getModel } from "../utils/model.js";
+import { extractAndStoreUserMemories } from "../utils/userMemory.engine.js";
 
 export const codingAgent = async (state) => {
 
@@ -26,9 +27,17 @@ function cleanCode(code = "") {
   const llm =
     getModel("coding");
 
+  const memoryContextText = state.memoryContext || "";
+
  const response = await llm.invoke(`You are CortexAI Coding Agent.
 
+${memoryContextText}
+
 Your first task is to identify the user's intent.
+
+User Request:
+
+${state.prompt}
 
 =========================
 INTENT DETECTION
@@ -294,6 +303,12 @@ console.log(content)
 
   }
 
+
+  if (state.userId) {
+    extractAndStoreUserMemories(state.userId, state.prompt, content).catch(err =>
+      console.error("Async Memory Extraction Error:", err.message)
+    );
+  }
 
   if (!content.includes("FILE:")) {
   return {

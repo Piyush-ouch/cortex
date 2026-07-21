@@ -1,63 +1,41 @@
 import { getModel } from "../utils/model.js";
+import { getRelevantUserMemories, buildMemoryContextPrompt } from "../utils/userMemory.engine.js";
 
-export const routerNode =
-async(state)=>{
+export const routerNode = async (state) => {
+  let memoryContext = "";
+  if (state.userId && state.prompt) {
+    try {
+      const memories = await getRelevantUserMemories(state.userId, state.prompt, 5);
+      memoryContext = buildMemoryContextPrompt(memories);
+    } catch (memErr) {
+      console.warn("Memory retrieval error in routerNode:", memErr.message);
+    }
+  }
 
-
-if (
-
-    state.agent &&
-
-    state.agent !== "auto"
-
-) {
-
+  if (state.agent && state.agent !== "auto") {
     return {
-
-        ...state,
-
-        agent: state.agent
-
+      ...state,
+      agent: state.agent,
+      memoryContext
     };
+  }
 
-}
-
-
-if(state.file){
-
-    if(
-
-        state.file.mimetype.startsWith("image/")
-
-    ){
-
-        return{
-
-            ...state,
-
-            agent:"vision"
-
-        };
-
+  if (state.file) {
+    if (state.file.mimetype.startsWith("image/")) {
+      return {
+        ...state,
+        agent: "vision",
+        memoryContext
+      };
     }
-
-}
-
-if(state.file){
-
-    if(state.file.mimetype==="application/pdf"){
-
-        return{
-
-            ...state,
-
-            agent:"pdf_rag"
-
-        };
-
+    if (state.file.mimetype === "application/pdf") {
+      return {
+        ...state,
+        agent: "pdf_rag",
+        memoryContext
+      };
     }
-
-}
+  }
 
 
  const llm =
@@ -121,14 +99,11 @@ ${state.prompt}
  `);
 
  return {
-
   ...state,
-
+  memoryContext,
   agent:
   result.content
    .trim()
    .toLowerCase()
-
  };
-
 };

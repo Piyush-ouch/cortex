@@ -35,6 +35,9 @@ Annotation.Root({
  Annotation(),
 
  pdfContext:
+ Annotation(),
+
+ memoryContext:
  Annotation()
 
 });

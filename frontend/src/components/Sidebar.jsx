@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Plus, MessageSquare, Settings, LogOut, User, PenSquare, Menu, X, Coins, ConeIcon, CoinsIcon, BookOpen, BarChart3, Sparkles } from "lucide-react";
+import { Plus, MessageSquare, Settings, LogOut, User, PenSquare, Menu, X, Coins, ConeIcon, CoinsIcon, BookOpen, BarChart3, Sparkles, Brain } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import api from "../utils/axios";
 import { setUserData } from "../redux/user.slice";
@@ -11,6 +11,7 @@ import BillingDrawer from "./BillingDrawer";
 import KnowledgeBaseDrawer from "./KnowledgeBaseDrawer";
 import AnalyticsModal from "./AnalyticsModal";
 import AgentMarketplaceDrawer from "./AgentMarketplaceDrawer";
+import UserMemoryDrawer from "./UserMemoryDrawer";
 
 export default function Sidebar() {
   const [hovered, setHovered]     = useState(null);
@@ -24,6 +25,7 @@ export default function Sidebar() {
   const [showKB, setShowKB] = useState(false);
   const [showAnalytics, setShowAnalytics] = useState(false);
   const [showMarketplace, setShowMarketplace] = useState(false);
+  const [showMemory, setShowMemory] = useState(false);
 
   const logout = async () => {
     try {
@@ -85,6 +87,14 @@ export default function Sidebar() {
         className="flex items-center justify-center w-9 h-9 rounded-xl text-slate-500 hover:text-slate-200 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer"
       >
         <Plus size={17} />
+      </button>
+
+      <button
+        onClick={() => setShowMemory(true)}
+        title="AI Memory Bank"
+        className="flex items-center justify-center w-9 h-9 rounded-xl text-violet-400 hover:bg-white/[0.05] transition-colors duration-150 bg-transparent border-none cursor-pointer mt-1"
+      >
+        <Brain size={16} />
       </button>
 
       <button
@@ -178,6 +188,13 @@ export default function Sidebar() {
           <span>New Chat</span>
         </button>
         <button
+          onClick={() => setShowMemory(true)}
+          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] font-medium text-violet-300 bg-violet-500/10 hover:bg-violet-500/15 border border-violet-500/20 transition-all duration-150 cursor-pointer"
+        >
+          <Brain size={15} className="text-violet-400" />
+          <span>AI Memory Bank</span>
+        </button>
+        <button
           onClick={() => setShowMarketplace(true)}
           className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-[12px] font-medium text-purple-300 bg-purple-500/10 hover:bg-purple-500/15 border border-purple-500/20 transition-all duration-150 cursor-pointer"
         >
@@ -245,6 +262,13 @@ export default function Sidebar() {
               <p className="text-[10.5px] text-slate-500">{userData.plan || "Free Plan"}</p>
             </div>
             <div className="flex items-center gap-1">
+              <button
+                onClick={() => setShowMemory(true)}
+                title="AI Memory Bank"
+                className="flex items-center justify-center w-7 h-7 rounded-[7px] border-none bg-transparent text-violet-400 cursor-pointer hover:bg-white/[0.08] transition-all duration-150"
+              >
+                <Brain size={15} />
+              </button>
               <button
                 onClick={() => setShowMarketplace(true)}
                 title="Agent Marketplace"
@@ -314,6 +338,11 @@ export default function Sidebar() {
       `}>
         <SidebarContent />
       </div>
+
+      <UserMemoryDrawer
+        isOpen={showMemory}
+        onClose={() => setShowMemory(false)}
+      />
 
       <BillingDrawer
         open={showBilling}

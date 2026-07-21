@@ -3,12 +3,17 @@ import { chat } from "../controllers/agent.controller.js";
 import { uploadDocument, getDocuments, deleteDocument } from "../controllers/kb.controller.js";
 import { getCustomAgents, createCustomAgent, deleteCustomAgent } from "../controllers/customAgent.controller.js";
 import { autoFixCode } from "../controllers/autoFix.controller.js";
+import { getUserMemoriesController, addUserMemoryController } from "../controllers/memory.controller.js";
 import multer from "../config/multer.js";
 
 const router = express.Router();
 
 router.post("/chat", multer.single("file"), chat);
 router.post("/auto-fix", autoFixCode);
+
+// Long-Term Memory routes
+router.get("/user-memory", getUserMemoriesController);
+router.post("/user-memory", addUserMemoryController);
 
 // Knowledge Base routes
 router.post("/kb/upload", multer.single("file"), uploadDocument);
