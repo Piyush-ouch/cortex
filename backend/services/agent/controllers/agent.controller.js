@@ -9,6 +9,7 @@ const NODE_STATUS_LABELS = {
   chat: { agent: "chat", label: "Generating response..." },
   coding: { agent: "coding", label: "Building code project & artifacts..." },
   database: { agent: "database", label: "Designing database schema, ERD & migrations..." },
+  api_designer: { agent: "api_designer", label: "Designing API specifications, Postman collection & mock endpoints..." },
   pdf: { agent: "pdf", label: "Generating PDF document..." },
   ppt: { agent: "ppt", label: "Designing presentation slides..." },
   image: { agent: "image", label: "Generating AI image..." },

@@ -7,6 +7,7 @@ import { Code2, Eye, PanelRightClose, PanelRightOpen, X, Copy, Check, Terminal, 
 import { motion, AnimatePresence } from "framer-motion";
 import SandboxConsole from "./SandboxConsole";
 import DatabaseSchemaPanel from "./DatabaseSchemaPanel";
+import ApiStudioPanel from "./ApiStudioPanel";
 import { updateArtifactFiles } from "../redux/message.slice";
 import api from "../utils/axios";
 
@@ -158,6 +159,9 @@ ${htmlFile?.content || ""}
   const PanelContent = ({ onClose }) => {
     if (artifact?.type === "database_schema") {
       return <DatabaseSchemaPanel artifact={artifact} />;
+    }
+    if (artifact?.type === "api_specification") {
+      return <ApiStudioPanel artifact={artifact} />;
     }
     return (
     <div className="flex flex-col h-full bg-[#0d0f14]">

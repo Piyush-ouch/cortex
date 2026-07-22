@@ -11,6 +11,7 @@ import { visionAgent } from "../agents/vision.agent.js";
 import { pdfRagAgent } from "../agents/pdfRag.agent.js";
 import { teamWorkflowAgent } from "../agents/teamWorkflow.agent.js";
 import { databaseAgent } from "../agents/database.agent.js";
+import { apiAgent } from "../agents/api.agent.js";
 
 const workflow = new StateGraph(AgentState);
 
@@ -18,6 +19,7 @@ workflow.addNode("router", routerNode);
 workflow.addNode("chat", chatAgent);
 workflow.addNode("coding", codingAgent);
 workflow.addNode("database", databaseAgent);
+workflow.addNode("api_designer", apiAgent);
 workflow.addNode("search", searchAgent);
 workflow.addNode("pdf", pdfAgent);
 workflow.addNode("ppt", pptAgent);
@@ -38,6 +40,8 @@ workflow.addConditionalEdges(
         return "coding";
       case "database":
         return "database";
+      case "api_designer":
+        return "api_designer";
       case "pdf":
         return "pdf";
       case "ppt":
@@ -59,6 +63,7 @@ workflow.addConditionalEdges(
     search: "search",
     coding: "coding",
     database: "database",
+    api_designer: "api_designer",
     pdf: "pdf",
     ppt: "ppt",
     image: "image",
@@ -70,6 +75,7 @@ workflow.addConditionalEdges(
 
 workflow.addEdge("coding", "__end__");
 workflow.addEdge("database", "__end__");
+workflow.addEdge("api_designer", "__end__");
 workflow.addEdge("image", "__end__");
 workflow.addEdge("search", "chat");
 workflow.addEdge("pdf", "__end__");

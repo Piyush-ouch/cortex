@@ -52,6 +52,7 @@ Available agents:
 - search
 - coding
 - database
+- api_designer
 - pdf
 - ppt
 - image 
@@ -75,8 +76,7 @@ coding:
 Generate code,
 debug code,
 build projects,
-architecture,
-API design.
+architecture.
 
 database:
 Database schema design,
@@ -84,6 +84,14 @@ Prisma ORM models,
 ERD diagrams,
 SQL migrations,
 PostgreSQL, MySQL, MongoDB schemas.
+
+api_designer:
+REST API design,
+OpenAPI specifications,
+Swagger JSON/YAML,
+Postman collections,
+Mock API endpoints,
+HTTP client SDKs.
 
 pdf:
 Questions about generate PDFs
@@ -99,6 +107,7 @@ chat
 search
 coding
 database
+api_designer
 pdf
 ppt
 image

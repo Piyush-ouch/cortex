@@ -39,6 +39,9 @@ export const getModel =
       case "database":
         return openRouter;
 
+      case "api_designer":
+        return openRouter;
+
       case "image":
         return groq;
 

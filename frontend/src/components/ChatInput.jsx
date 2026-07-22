@@ -40,6 +40,8 @@ coding:"Describe the software you want...",
 
 database:"Design database schema, ERD & Prisma models...",
 
+api_designer:"Design REST API specs, Postman collections & mock studio...",
+
 pdf:"Generate a PDF about...",
 
 ppt:"Create a presentation about...",
@@ -82,6 +84,12 @@ team_workflow:"Execute Multi-Agent Team Workflow (Research â†’ Build Prototype â
     id:"database",
     icon:Database,
     label:"Database"
+  },
+
+  {
+    id:"api_designer",
+    icon:Globe,
+    label:"API Studio"
   },
 
   {
