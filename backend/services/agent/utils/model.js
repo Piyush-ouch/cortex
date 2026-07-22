@@ -36,6 +36,9 @@ export const getModel =
       case "coding":
         return openRouter;
 
+      case "database":
+        return openRouter;
+
       case "image":
         return groq;
 

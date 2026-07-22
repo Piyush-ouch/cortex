@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Send, Paperclip, Square, Zap, MessageSquare, Code2, Presentation, Image as ImageIcon, Globe, FileText, X, Workflow } from "lucide-react";
+import { Send, Paperclip, Square, Zap, MessageSquare, Code2, Presentation, Image as ImageIcon, Globe, FileText, X, Workflow, Database } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import { addMessage, setArtifacts, setIsLoading } from "../redux/message.slice";
 import { sendPrompt } from "../features/agent.api";
@@ -38,6 +38,8 @@ chat:"Chat with CortexAI...",
 
 coding:"Describe the software you want...",
 
+database:"Design database schema, ERD & Prisma models...",
+
 pdf:"Generate a PDF about...",
 
 ppt:"Create a presentation about...",
@@ -74,6 +76,12 @@ team_workflow:"Execute Multi-Agent Team Workflow (Research â†’ Build Prototype â
     id:"coding",
     icon:Code2,
     label:"Coding"
+  },
+
+  {
+    id:"database",
+    icon:Database,
+    label:"Database"
   },
 
   {

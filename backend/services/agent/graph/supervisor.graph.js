@@ -10,12 +10,14 @@ import { imageAgent } from "../agents/imageGen.agent.js";
 import { visionAgent } from "../agents/vision.agent.js";
 import { pdfRagAgent } from "../agents/pdfRag.agent.js";
 import { teamWorkflowAgent } from "../agents/teamWorkflow.agent.js";
+import { databaseAgent } from "../agents/database.agent.js";
 
 const workflow = new StateGraph(AgentState);
 
 workflow.addNode("router", routerNode);
 workflow.addNode("chat", chatAgent);
 workflow.addNode("coding", codingAgent);
+workflow.addNode("database", databaseAgent);
 workflow.addNode("search", searchAgent);
 workflow.addNode("pdf", pdfAgent);
 workflow.addNode("ppt", pptAgent);
@@ -34,6 +36,8 @@ workflow.addConditionalEdges(
         return "search";
       case "coding":
         return "coding";
+      case "database":
+        return "database";
       case "pdf":
         return "pdf";
       case "ppt":
@@ -54,6 +58,7 @@ workflow.addConditionalEdges(
     chat: "chat",
     search: "search",
     coding: "coding",
+    database: "database",
     pdf: "pdf",
     ppt: "ppt",
     image: "image",
@@ -64,6 +69,7 @@ workflow.addConditionalEdges(
 );
 
 workflow.addEdge("coding", "__end__");
+workflow.addEdge("database", "__end__");
 workflow.addEdge("image", "__end__");
 workflow.addEdge("search", "chat");
 workflow.addEdge("pdf", "__end__");

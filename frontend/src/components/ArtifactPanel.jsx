@@ -6,6 +6,7 @@ import { detectLanguage } from "../utils/detectLanguage";
 import { Code2, Eye, PanelRightClose, PanelRightOpen, X, Copy, Check, Terminal, Zap, Loader2, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import SandboxConsole from "./SandboxConsole";
+import DatabaseSchemaPanel from "./DatabaseSchemaPanel";
 import { updateArtifactFiles } from "../redux/message.slice";
 import api from "../utils/axios";
 
@@ -154,7 +155,11 @@ ${htmlFile?.content || ""}
   };
 
   /* ── Shared code panel content ── */
-  const PanelContent = ({ onClose }) => (
+  const PanelContent = ({ onClose }) => {
+    if (artifact?.type === "database_schema") {
+      return <DatabaseSchemaPanel artifact={artifact} />;
+    }
+    return (
     <div className="flex flex-col h-full bg-[#0d0f14]">
 
       {/* Header */}
@@ -294,6 +299,7 @@ ${htmlFile?.content || ""}
       </div>
     </div>
   );
+};
 
   return (
     <>

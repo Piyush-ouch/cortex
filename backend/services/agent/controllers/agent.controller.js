@@ -8,6 +8,7 @@ const NODE_STATUS_LABELS = {
   search: { agent: "search", label: "Searching web via Tavily..." },
   chat: { agent: "chat", label: "Generating response..." },
   coding: { agent: "coding", label: "Building code project & artifacts..." },
+  database: { agent: "database", label: "Designing database schema, ERD & migrations..." },
   pdf: { agent: "pdf", label: "Generating PDF document..." },
   ppt: { agent: "ppt", label: "Designing presentation slides..." },
   image: { agent: "image", label: "Generating AI image..." },

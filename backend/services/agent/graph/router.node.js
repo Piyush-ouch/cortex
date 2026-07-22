@@ -51,6 +51,7 @@ Available agents:
 - chat
 - search
 - coding
+- database
 - pdf
 - ppt
 - image 
@@ -77,6 +78,13 @@ build projects,
 architecture,
 API design.
 
+database:
+Database schema design,
+Prisma ORM models,
+ERD diagrams,
+SQL migrations,
+PostgreSQL, MySQL, MongoDB schemas.
+
 pdf:
 Questions about generate PDFs
 or document context.
@@ -90,7 +98,10 @@ Return ONLY one word:
 chat
 search
 coding
+database
 pdf
+ppt
+image
 
 User Query:
 
