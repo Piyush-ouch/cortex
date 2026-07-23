@@ -12,6 +12,7 @@ import { pdfRagAgent } from "../agents/pdfRag.agent.js";
 import { teamWorkflowAgent } from "../agents/teamWorkflow.agent.js";
 import { databaseAgent } from "../agents/database.agent.js";
 import { apiAgent } from "../agents/api.agent.js";
+import { securityAgent } from "../agents/security.agent.js";
 
 const workflow = new StateGraph(AgentState);
 
@@ -20,6 +21,7 @@ workflow.addNode("chat", chatAgent);
 workflow.addNode("coding", codingAgent);
 workflow.addNode("database", databaseAgent);
 workflow.addNode("api_designer", apiAgent);
+workflow.addNode("security_auditor", securityAgent);
 workflow.addNode("search", searchAgent);
 workflow.addNode("pdf", pdfAgent);
 workflow.addNode("ppt", pptAgent);
@@ -42,6 +44,8 @@ workflow.addConditionalEdges(
         return "database";
       case "api_designer":
         return "api_designer";
+      case "security_auditor":
+        return "security_auditor";
       case "pdf":
         return "pdf";
       case "ppt":
@@ -64,6 +68,7 @@ workflow.addConditionalEdges(
     coding: "coding",
     database: "database",
     api_designer: "api_designer",
+    security_auditor: "security_auditor",
     pdf: "pdf",
     ppt: "ppt",
     image: "image",
@@ -76,6 +81,7 @@ workflow.addConditionalEdges(
 workflow.addEdge("coding", "__end__");
 workflow.addEdge("database", "__end__");
 workflow.addEdge("api_designer", "__end__");
+workflow.addEdge("security_auditor", "__end__");
 workflow.addEdge("image", "__end__");
 workflow.addEdge("search", "chat");
 workflow.addEdge("pdf", "__end__");

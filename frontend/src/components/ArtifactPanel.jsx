@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import SandboxConsole from "./SandboxConsole";
 import DatabaseSchemaPanel from "./DatabaseSchemaPanel";
 import ApiStudioPanel from "./ApiStudioPanel";
+import SecurityAuditPanel from "./SecurityAuditPanel";
 import { updateArtifactFiles } from "../redux/message.slice";
 import api from "../utils/axios";
 
@@ -162,6 +163,9 @@ ${htmlFile?.content || ""}
     }
     if (artifact?.type === "api_specification") {
       return <ApiStudioPanel artifact={artifact} />;
+    }
+    if (artifact?.type === "security_audit") {
+      return <SecurityAuditPanel artifact={artifact} />;
     }
     return (
     <div className="flex flex-col h-full bg-[#0d0f14]">

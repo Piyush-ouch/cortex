@@ -7,6 +7,7 @@ const LIMITS = {
   coding: 5,
   database: 5,
   api_designer: 5,
+  security_auditor: 5,
   pdf: 5,
   ppt: 5,
   image: 3,

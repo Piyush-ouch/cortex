@@ -40,6 +40,16 @@ const DEFAULT_MARKETPLACE_AGENTS = [
     systemPrompt: "You are a Senior Python Backend Architect. Write clean, type-hinted, high-performance Python code using FastAPI, Pydantic, and async idioms.",
     temperature: 0.3,
     isPublic: true
+  },
+  {
+    userId: "system",
+    name: "Cortex Sentinel Security Auditor",
+    avatar: "🛡️",
+    category: "Coding",
+    description: "Enterprise security auditor checking code for OWASP Top 10 vulnerabilities, secret leaks, and patch recommendations.",
+    systemPrompt: "You are Cortex Sentinel AI Security Auditor. Perform automated security audits, OWASP vulnerability scans, CWE categorizations, attack scenario walkthroughs, and automated secure code patch generation.",
+    temperature: 0.1,
+    isPublic: true
   }
 ];
 

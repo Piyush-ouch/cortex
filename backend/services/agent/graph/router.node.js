@@ -53,6 +53,7 @@ Available agents:
 - coding
 - database
 - api_designer
+- security_auditor
 - pdf
 - ppt
 - image 
@@ -93,6 +94,14 @@ Postman collections,
 Mock API endpoints,
 HTTP client SDKs.
 
+security_auditor:
+Security code audit,
+Vulnerability scanning,
+OWASP Top 10 evaluation,
+Secret leak detection,
+SQL injection & XSS detection,
+Security advisory & automated remediation patches.
+
 pdf:
 Questions about generate PDFs
 or document context.
@@ -108,6 +117,7 @@ search
 coding
 database
 api_designer
+security_auditor
 pdf
 ppt
 image
