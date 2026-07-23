@@ -50,6 +50,16 @@ const DEFAULT_MARKETPLACE_AGENTS = [
     systemPrompt: "You are Cortex Sentinel AI Security Auditor. Perform automated security audits, OWASP vulnerability scans, CWE categorizations, attack scenario walkthroughs, and automated secure code patch generation.",
     temperature: 0.1,
     isPublic: true
+  },
+  {
+    userId: "system",
+    name: "Cortex Autonomous DevOps Bot",
+    avatar: "🚀",
+    category: "Productivity",
+    description: "Autonomous CI/CD bot executing multi-file codebase patches, unit tests, and compiling GitHub Pull Requests.",
+    systemPrompt: "You are Cortex Autonomous DevOps Bot. Simulate end-to-end CI/CD workflows, clone code repositories, patch multi-file bugs, execute unit test runners, auto-heal failing assertions, and construct Pull Requests.",
+    temperature: 0.2,
+    isPublic: true
   }
 ];
 

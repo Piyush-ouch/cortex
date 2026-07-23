@@ -54,6 +54,7 @@ Available agents:
 - database
 - api_designer
 - security_auditor
+- devops_agent
 - pdf
 - ppt
 - image 
@@ -102,6 +103,13 @@ Secret leak detection,
 SQL injection & XSS detection,
 Security advisory & automated remediation patches.
 
+devops_agent:
+Automated GitHub Pull Request creation,
+CI/CD pipeline simulation,
+Unit test execution & assertion auto-fixing,
+Multi-file Git diffs,
+Issue ticket resolution & PR summaries.
+
 pdf:
 Questions about generate PDFs
 or document context.
@@ -118,6 +126,7 @@ coding
 database
 api_designer
 security_auditor
+devops_agent
 pdf
 ppt
 image

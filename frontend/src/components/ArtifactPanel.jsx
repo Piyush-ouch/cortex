@@ -9,6 +9,7 @@ import SandboxConsole from "./SandboxConsole";
 import DatabaseSchemaPanel from "./DatabaseSchemaPanel";
 import ApiStudioPanel from "./ApiStudioPanel";
 import SecurityAuditPanel from "./SecurityAuditPanel";
+import DevOpsStudioPanel from "./DevOpsStudioPanel";
 import { updateArtifactFiles } from "../redux/message.slice";
 import api from "../utils/axios";
 
@@ -166,6 +167,9 @@ ${htmlFile?.content || ""}
     }
     if (artifact?.type === "security_audit") {
       return <SecurityAuditPanel artifact={artifact} />;
+    }
+    if (artifact?.type === "devops_simulation") {
+      return <DevOpsStudioPanel artifact={artifact} />;
     }
     return (
     <div className="flex flex-col h-full bg-[#0d0f14]">

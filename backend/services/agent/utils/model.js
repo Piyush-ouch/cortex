@@ -45,6 +45,9 @@ export const getModel =
       case "security_auditor":
         return openRouter;
 
+      case "devops_agent":
+        return openRouter;
+
       case "image":
         return groq;
 
